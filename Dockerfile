@@ -1,5 +1,5 @@
 # Specifies the base image we're extending
-FROM node:9
+FROM node:13-alpine
 
 # Specify the "working directory" for the rest of the Dockerfile
 WORKDIR /src
@@ -14,6 +14,9 @@ COPY ./app /src/app
 COPY ./bin /src/bin
 COPY ./public /src/public
 
+# Remove unused vulnerable packages
+RUN rm -rf /src/node_modules/handlebars
+
 # Add the nodemon configuration file
 COPY ./nodemon.json /src/nodemon.json
 
@@ -22,6 +25,9 @@ ENV NODE_ENV development
 
 # Allows port 3000 to be publicly available
 EXPOSE 3000
+
+# Set default user
+USER node
 
 # The command uses nodemon to run the application
 CMD ["node", "node_modules/.bin/nodemon", "-L", "bin/www"]
